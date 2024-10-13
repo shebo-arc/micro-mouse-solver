@@ -1,155 +1,83 @@
 import tkinter as tk
-import heapq
-import astar
-
-# Directions for moving in the maze: Right, Down, Left, Up
-DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-
+import random
 
 class MazeApp:
-    def __init__(self, master, file_path, cell_size=30):
-        self.master = master
-        self.cell_size = cell_size
-
-        # Load the maze from a text file
-        self.grid = self.load_maze(file_path)
-        self.rows = len(self.grid)
-        self.cols = len(self.grid[0])
-
-        # Set up the canvas with the correct size
-        self.canvas = tk.Canvas(master, width=self.cols * cell_size, height=self.rows * cell_size)
+    def __init__(self, root, width=10, height=10, cell_size=40):
+        self.root = root
+        self.width = width  # Number of columns in the maze
+        self.height = height  # Number of rows in the maze
+        self.cell_size = cell_size  # Size of each cell in pixels
+        self.canvas = tk.Canvas(root, width=width * cell_size, height=height * cell_size)
         self.canvas.pack()
+        self.grid = []
+        self.create_maze_grid()
+        self.draw_maze()
+        self.draw_random_path()
 
-        # Draw the initial maze
-        self.draw_maze(self.start, self.end)
-
-        # Find start and end points
-        self.start, self.end = self.find_start_and_end()
-
-        self.draw_path()
-
-    '''
-        # If both start and end are found, solve the maze using A*
-        if self.start and self.end:
-            path = self.astar(self.start, self.end)
-            if path:
-                self.draw_path(path)
-                self.save_solution_to_file('solved_maze.txt', path)
-            else:
-                print("No path found.")
-        else:
-            print("Start or end point not found in the maze.")
-    '''
-
-    def load_maze(self, file_path):
-        """Load the maze from a text file."""
-        with open(file_path, 'r') as file:
-            maze = [list(line.strip()) for line in file.readlines()]  # Read as list of characters
-        return maze
+    def create_maze_grid(self):
+        """Create a simple maze grid (can be customized for complex mazes)."""
+        # Initializing the maze with 0 for open spaces and 1 for walls.
+        self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        # Adding random walls to make it a simple maze
+        for i in range(self.height):
+            for j in range(self.width):
+                if random.choice([0, 1]) == 1:
+                    self.grid[i][j] = 1  # Mark as a wall
 
     def draw_maze(self):
-        """Draw the maze on the Tkinter canvas."""
-        for r in range(self.rows):
-            for c in range(self.cols):
-                if self.grid[r][c] == '1':
-                    color = 'black'  # Wall
-                elif self.grid[r][c] == '0':
-                    color = 'white'  # Path
-                elif self.grid[r][c] == 'S':
-                    color = 'red'  # Start point
-                elif self.grid[r][c] == 'E':
-                    color = 'red'  # End point
+        """Draw the maze on the canvas."""
+        for row in range(self.height):
+            for col in range(self.width):
+                x1 = col * self.cell_size
+                y1 = row * self.cell_size
+                x2 = x1 + self.cell_size
+                y2 = y1 + self.cell_size
+                color = "black" if self.grid[row][col] == 1 else "white"
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-                self.canvas.create_rectangle(c * self.cell_size, r * self.cell_size,
-                                             (c + 1) * self.cell_size, (r + 1) * self.cell_size,
-                                             fill=color)
+    def draw_random_path(self):
+        """Draw a random path in the maze by coloring one brick after another."""
+        path = self.generate_random_path()
+        self.animate_path(path)
 
-    def draw_path(self):
-        """Draw the solution path on the Tkinter canvas."""
-        path = astar.astar(maze, start, end)
-        for (r, c) in path:
-            if self.grid[r][c] != 'S' and self.grid[r][c] != 'E':  # Keep S and E red
-                self.canvas.create_rectangle(c * self.cell_size, r * self.cell_size,
-                                             (c + 1) * self.cell_size, (r + 1) * self.cell_size,
-                                             fill='blue')  # Path will be blue
-
-'''
-    def find_start_and_end(self):
-        """Find the start (S) and end (E) points in the maze."""
-        start = None
-        end = None
-        for r in range(len(self.grid)):
-            for c in range(len(self.grid[0])):
-                if self.grid[r][c] == 'S':
-                    start = (r, c)
-                elif self.grid[r][c] == 'E':
-                    end = (r, c)
-        return start, end
-
-    def heuristic(self, a, b):
-        """Calculate the Manhattan distance between two points."""
-        return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-    def astar(self, start, goal):
-        """A* algorithm to find the shortest path from start to goal in the maze."""
-        open_set = []
-        heapq.heappush(open_set, (0, start))  # (priority, (row, col))
-
-        # Dictionaries to store the cost and path
-        g_score = {start: 0}
-        came_from = {}
-
-        while open_set:
-            # Get the node with the lowest f_score
-            _, current = heapq.heappop(open_set)
-
-            # If the goal is reached, reconstruct the path
-            if current == goal:
-                return self.reconstruct_path(came_from, current)
-
-            # Explore neighbors
-            for direction in DIRECTIONS:
-                neighbor = (current[0] + direction[0], current[1] + direction[1])
-
-                if (0 <= neighbor[0] < self.rows and 0 <= neighbor[1] < self.cols and
-                        self.grid[neighbor[0]][neighbor[1]] != '1'):  # Check if not a wall
-                    tentative_g_score = g_score[current] + 1
-
-                    if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
-                        came_from[neighbor] = current
-                        g_score[neighbor] = tentative_g_score
-                        f_score = tentative_g_score + self.heuristic(neighbor, goal)
-                        heapq.heappush(open_set, (f_score, neighbor))
-
-        return None  # Return None if no path is found
-
-    def reconstruct_path(self, came_from, current):
-        """Reconstruct the path from the goal to the start."""
+    def generate_random_path(self):
+        """Generate a random path through the maze."""
         path = []
-        while current in came_from:
-            path.append(current)
-            current = came_from[current]
-        path.reverse()
+        # Start at the top-left corner (0, 0)
+        current_pos = (0, 0)
+        path.append(current_pos)
+
+        while current_pos != (self.height - 1, self.width - 1):  # Until reaching bottom-right corner
+            row, col = current_pos
+            # Choose a random direction to move (right, down)
+            possible_moves = []
+            if row + 1 < self.height and self.grid[row + 1][col] == 0:
+                possible_moves.append((row + 1, col))
+            if col + 1 < self.width and self.grid[row][col + 1] == 0:
+                possible_moves.append((row, col + 1))
+
+            if not possible_moves:
+                break  # No more possible moves
+            current_pos = random.choice(possible_moves)
+            path.append(current_pos)
+
         return path
 
-    def save_solution_to_file(self, output_file, path):
-        """Save the maze with the solution path marked by '*' to a text file."""
-        # Mark the path in the grid
-        for (r, c) in path:
-            if self.grid[r][c] != 'S' and self.grid[r][c] != 'E':
-                self.grid[r][c] = '*'  # Mark the path with '*'
+    def animate_path(self, path):
+        """Animate the drawing of the path."""
+        for i, (row, col) in enumerate(path):
+            self.root.after(i * 100, self.color_cell, row, col, "blue")
 
-        # Write the modified maze to the output file
-        with open(output_file, 'w') as f:
-            for row in self.grid:
-                f.write("".join(row) + "\n")
-'''
+    def color_cell(self, row, col, color):
+        """Color a specific cell."""
+        x1 = col * self.cell_size
+        y1 = row * self.cell_size
+        x2 = x1 + self.cell_size
+        y2 = y1 + self.cell_size
+        self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-if __name__ == "__main__":
-    root = tk.Tk()
 
-    # Path to the text file containing the maze structure
-    file_path = 'grid.txt'
-
-    app = MazeApp(root, file_path)
-    root.mainloop()
+# Initialize the Tkinter application
+root = tk.Tk()
+app = MazeApp(root)
+root.mainloop()

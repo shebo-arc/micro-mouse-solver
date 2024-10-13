@@ -4,13 +4,6 @@ import heapq
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
 
-def load_maze(file_path):
-    """Load the maze from a text file."""
-    with open(file_path, 'r') as file:
-        maze = [list(line.strip()) for line in file.readlines()]  # Read as list of characters
-    return maze
-
-
 def heuristic(a, b):
     """Calculate the Manhattan distance between two points."""
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
@@ -63,20 +56,6 @@ def reconstruct_path(came_from, current):
     path.reverse()
     return path
 
-
-def find_start_and_end(maze):
-    """Find the start (S) and end (E) points in the maze."""
-    start = None
-    end = None
-    for r in range(len(maze)):
-        for c in range(len(maze[0])):
-            if maze[r][c] == 'S':
-                start = (r, c)
-            elif maze[r][c] == 'E':
-                end = (r, c)
-    return start, end
-
-
 def print_maze_with_path(maze, path):
     """Print the maze and visualize the path."""
     for (r, c) in path:
@@ -87,14 +66,7 @@ def print_maze_with_path(maze, path):
             f.write("".join(row) + "\n")
 
 
-def run_astar():
-    # Load the maze from the text file
-    maze_file = 'grid.txt'
-    maze = load_maze(maze_file)
-
-    # Find start and end points
-    start, end = find_start_and_end(maze)
-
+def run_astar(maze, start, end):
     if start and end:
         # Run A* algorithm to find the shortest path
         path = astar(maze, start, end)
