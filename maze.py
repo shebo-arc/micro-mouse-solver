@@ -8,8 +8,10 @@ DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
 
 class MazeApp:
-    def __init__(self, master, file_path, cell_size=30):
+    def __init__(self, master, file_path, title, algorithm_func, cell_size=30):
         self.master = master
+        self.master.title(title)  # Set window title
+        self.algorithm_func = algorithm_func  # Algorithm function (A* or Dijkstra)
         self.cell_size = cell_size
 
         # Load the maze from a text file
@@ -26,6 +28,11 @@ class MazeApp:
 
         # Find start and end points
         self.start, self.end = self.find_start_and_end()
+
+        # Run the algorithm and animate the solution
+        path = self.algorithm_func(self.grid, self.start, self.end)
+        if path:
+            self.animate_path(path)
 
     def load_maze(self, file_path):
         """Load the maze from a text file."""
@@ -50,13 +57,6 @@ class MazeApp:
                                              (c + 1) * self.cell_size, (r + 1) * self.cell_size,
                                              fill=color)
 
-    def draw_path(self,file_path):
-        """Draw the solution path on the Tkinter canvas."""
-        for (r, c) in file_path:
-            if self.grid[r][c] != 'S' and self.grid[r][c] != 'E':  # Keep S and E red
-                self.canvas.create_rectangle(c * self.cell_size, r * self.cell_size,
-                                             (c + 1) * self.cell_size, (r + 1) * self.cell_size,
-                                             fill='blue')  # Path will be blue
     def animate_path(self, path):
         """Animate the drawing of the path."""
         for i, (row, col) in enumerate(path):
@@ -84,13 +84,17 @@ class MazeApp:
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-
     # Path to the text file containing the maze structure
     file_path = 'grid.txt'
 
-    app = MazeApp(root, file_path)
-    #path = astar.run_astar(app.grid, app.start, app.end)
-    path = dijkstra.run_dijkstra(app.grid, app.start, app.end)
-    app.animate_path(path)
-    root.mainloop()
+    # First window for A* algorithm
+    root_astar = tk.Tk()
+    astar_app = MazeApp(root_astar, file_path, "A* Algorithm", astar.run_astar)
+
+    # Second window for Dijkstra algorithm
+    root_dijkstra = tk.Tk()
+    dijkstra_app = MazeApp(root_dijkstra, file_path, "Dijkstra Algorithm", dijkstra.run_dijkstra)
+
+    # Start both Tkinter windows
+    root_astar.mainloop()
+    root_dijkstra.mainloop()
