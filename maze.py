@@ -1,6 +1,7 @@
 import tkinter as tk
 import heapq
 import astar
+import dijkstra
 
 # Directions for moving in the maze: Right, Down, Left, Up
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -89,6 +90,7 @@ if __name__ == "__main__":
     file_path = 'grid.txt'
 
     app = MazeApp(root, file_path)
-    path = astar.run_astar(app.grid, app.start, app.end)
+    #path = astar.run_astar(app.grid, app.start, app.end)
+    path = dijkstra.run_dijkstra(app.grid, app.start, app.end)
     app.animate_path(path)
     root.mainloop()
