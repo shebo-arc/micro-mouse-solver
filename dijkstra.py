@@ -1,13 +1,12 @@
 import heapq
+import sensor
 
 # Directions for moving in the maze: Right, Down, Left, Up
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
 
-def dijkstra(maze, start, goal):
+def dijkstra(start, goal):
     """Dijkstra's algorithm to find the shortest path from start to goal in the maze."""
-    rows, cols = len(maze), len(maze[0])
-
     # Priority queue (min-heap) for Dijkstra's search
     open_set = []
     heapq.heappush(open_set, (0, start))  # (distance, (row, col))
@@ -27,8 +26,9 @@ def dijkstra(maze, start, goal):
         # Explore neighbors
         for direction in DIRECTIONS:
             neighbor = (current[0] + direction[0], current[1] + direction[1])
+            det = sensor.wall(current, direction)
 
-            if 0 <= neighbor[0] < rows and 0 <= neighbor[1] < cols and maze[neighbor[0]][neighbor[1]] != '1':
+            if det != '1':
                 # Calculate g score (distance) for the neighbor
                 tentative_g_score = g_score[current] + 1
 
@@ -52,10 +52,10 @@ def reconstruct_path(came_from, current):
     return path
 
 
-def run_dijkstra(maze, start, end):
+def run_dijkstra(start, end):
     if start and end:
         # Run Dijkstra's algorithm to find the shortest path
-        path = dijkstra(maze, start, end)
+        path = dijkstra(start, end)
 
         if path:
             print("Path found using Dijkstra")
