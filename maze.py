@@ -56,9 +56,7 @@ class MazeApp:
                     self.color_cell(neighbor[0], neighbor[1], 'red')
                 elif det == 'E':
                     self.color_cell(neighbor[0], neighbor[1], 'red')
-
-
-            #self.animate_path(path)'''
+            # self.animate_path(path)
 
     def load_maze(self, file_path):
         """Load the maze from a text file."""
@@ -70,15 +68,15 @@ class MazeApp:
         """Draw the maze on the Tkinter canvas."""
         for r in range(self.rows):
             for c in range(self.cols):
-                if self.grid[r][c] == '1':
+                '''if self.grid[r][c] == '1':
                     color = 'black'  # Wall
                 elif self.grid[r][c] == '0':
                     color = 'white'  # Path
                 elif self.grid[r][c] == 'S':
                     color = 'red'  # Start point
                 elif self.grid[r][c] == 'E':
-                    color = 'red'  # End point
-                if self.grid[r][c]=='S' or self.grid[r][c]=='E':
+                    color = 'red'  # End point'''
+                if self.grid[r][c] == 'S' or self.grid[r][c] == 'E':
                     color = 'red'
                 else:
                     color = 'yellow'
@@ -122,18 +120,18 @@ if __name__ == "__main__":
     maze_path = 'grid.txt'
 
     # First window for A* algorithm
-    '''root_astar = tk.Tk()
+    root_astar = tk.Tk()
     astar_app = MazeApp(root_astar, maze_path, "A* Algorithm", astar.run_astar)
 
     # Second window for Dijkstra algorithm
     root_dijkstra = tk.Tk()
-    dijkstra_app = MazeApp(root_dijkstra, maze_path, "Dijkstra Algorithm", dijkstra.run_dijkstra)'''
+    dijkstra_app = MazeApp(root_dijkstra, maze_path, "Dijkstra Algorithm", dijkstra.run_dijkstra)
 
     # Third window for Flood fill algorithm
     root_flood = tk.Tk()
-    flood_app = MazeApp(root_flood, maze_path, "Flood Fill Algorithm", flood.flood_fill)
+    flood_app = MazeApp(root_flood, maze_path, "Flood Fill Algorithm", flood.run_flood)
 
     # Start both Tkinter windows
-    #root_astar.mainloop()
-    #root_dijkstra.mainloop()
+    root_astar.mainloop()
+    root_dijkstra.mainloop()
     root_flood.mainloop()

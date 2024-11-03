@@ -36,7 +36,7 @@ def astar(start, goal):
             neighbor = (current[0] + direction[0], current[1] + direction[1])
             det = sensor.wall(current, direction)
 
-            if det != None:
+            if det is not None:
                 # Record the current node, its neighbor, and whether it's a wall or not
                 visited_nodes.append((current, neighbor, det))
 
@@ -72,8 +72,8 @@ def run_astar(start, end):
 
         if path:
             print("Path found in A*")
-            #print("Visited nodes and neighbors examined:")
-            #for current, neighbor, wall in visited_nodes:
+            # print("Visited nodes and neighbors examined:")
+            # for current, neighbor, wall in visited_nodes:
             #    print(f"Current: {current}, Neighbor: {neighbor}, Wall: {wall}")
             return path, visited_nodes
         else:

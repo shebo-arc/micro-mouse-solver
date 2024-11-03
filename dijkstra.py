@@ -32,7 +32,7 @@ def dijkstra(start, goal):
             det = sensor.wall(current, direction)
 
             # Record the current node, its neighbor, and the wall detection value
-            if det != None:
+            if det is not None:
                 visited_nodes.append((current, neighbor, det))
 
                 if det != '1':  # If there's no wall
@@ -66,8 +66,8 @@ def run_dijkstra(start, end):
 
         if path:
             print("Path found using Dijkstra")
-            #print("Visited nodes and neighbors examined:")
-            #for current, neighbor, det in visited_nodes:
+            # print("Visited nodes and neighbors examined:")
+            # for current, neighbor, det in visited_nodes:
             #    print(f"Current: {current}, Neighbor: {neighbor}, Det: {det}")
             return path, visited_nodes
         else:
