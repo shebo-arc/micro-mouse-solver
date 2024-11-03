@@ -31,31 +31,34 @@ class MazeApp:
         # Run the algorithm and animate the solution
         path, visited_nodes = self.algorithm_func(self.start, self.end)
         if path:
+            delay = 0
             for current, neighbor, det in visited_nodes:
                 if current in path:
-                    self.color_cell(current[0], current[1], 'blue')
+                    self.master.after(delay, self.color_cell, current[0], current[1], 'blue')
                 else:
-                    self.color_cell(current[0], current[1], 'cyan')
+                    self.master.after(delay, self.color_cell, current[0], current[1], 'cyan')
                 if det == '1' and neighbor not in path:
-                    self.color_cell(neighbor[0], neighbor[1], 'black')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'black')
                 elif det == '0' and neighbor not in path:
-                    self.color_cell(neighbor[0], neighbor[1], 'white')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'white')
                 elif det == 'S' and neighbor not in path:
-                    self.color_cell(neighbor[0], neighbor[1], 'red')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'red')
                 elif det == 'E' and neighbor not in path:
-                    self.color_cell(neighbor[0], neighbor[1], 'red')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'red')
+                delay += 50  # Increment delay for each step
         else:
+            delay = 0
             for current, neighbor, det in visited_nodes:
-                self.color_cell(current[0], current[1], 'cyan')
+                self.master.after(delay, self.color_cell, current[0], current[1], 'cyan')
                 if det == '1':
-                    self.color_cell(neighbor[0], neighbor[1], 'black')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'black')
                 elif det == '0':
-                    self.color_cell(neighbor[0], neighbor[1], 'white')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'white')
                 elif det == 'S':
-                    self.color_cell(neighbor[0], neighbor[1], 'red')
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'red')
                 elif det == 'E':
-                    self.color_cell(neighbor[0], neighbor[1], 'red')
-            # self.animate_path(path)
+                    self.master.after(delay, self.color_cell, neighbor[0], neighbor[1], 'red')
+                delay += 50  # Increment delay for each step
 
     def draw_maze(self):
         """Draw the maze on the Tkinter canvas."""
@@ -78,10 +81,18 @@ class MazeApp:
                                              (c + 1) * self.cell_size, (r + 1) * self.cell_size,
                                              fill=color)
 
-    def animate_path(self, path, color):
-        """Animate the drawing of the path."""
+    def animate_path(self, path, delay_start=0):
+        """Animate the drawing of the path with multiple colors."""
+        colors = ['cyan', 'blue', 'white', 'black', 'red']  # All colors used in the program
+        color_index = 0
+        delay = delay_start
         for i, (row, col) in enumerate(path):
-            self.master.after(i * 100, self.color_cell, row, col, color)
+            # Cycle through colors for each cell in the path
+            color = colors[color_index]
+            self.master.after(delay, self.color_cell, row, col, color)
+            color_index = (color_index + 1) % len(colors)
+            delay += 100  # Delay between each cell
+        return delay  # Return the final delay for coordination with other animations
 
     def color_cell(self, row, col, color):
         """Color a specific cell."""

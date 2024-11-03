@@ -75,8 +75,6 @@ def reconstruct_path(came_from, start, end):
         current = came_from.get(current)
         if current is None:  # If there's no valid path back to start
             return None
-
-    path.append(start)  # Add start position at the end of the path
     return path[::-1]  # Reverse to get path from start to end
 
 

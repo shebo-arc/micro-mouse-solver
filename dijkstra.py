@@ -54,6 +54,8 @@ def reconstruct_path(came_from, current):
     while current in came_from:
         path.append(current)
         current = came_from[current]
+        if current is None:  # If there's no valid path back to start
+            return None
     path.reverse()
     path.pop()
     return path
