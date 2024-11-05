@@ -2,6 +2,8 @@ import tkinter as tk
 import astar
 import dijkstra
 import flood
+import bidirection
+import time
 
 # Directions for moving in the maze: Right, Down, Left, Up
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -22,6 +24,10 @@ class MazeApp:
         self.canvas = tk.Canvas(master, width=self.cols * cell_size, height=self.rows * cell_size)
         self.canvas.pack()
 
+        # Add label for timer
+        self.timer_label = tk.Label(master, text="Algorithm Runtime: 0 ms")
+        self.timer_label.pack()
+
         # Find start and end points
         self.start, self.end = (0, 0), (9, 9)
 
@@ -29,7 +35,17 @@ class MazeApp:
         self.draw_maze()
 
         # Run the algorithm and animate the solution
+        start_time = time.perf_counter()
         path, visited_nodes = self.algorithm_func(self.start, self.end)
+        end_time = time.perf_counter()
+        execution_time = (end_time - start_time) * 1000  # Convert to milliseconds
+
+        # Update timer label
+        self.timer_label.config(text=f"Algorithm Runtime: {execution_time:.2f} ms")
+        print(f"{title} Runtime: {execution_time:.2f} ms")
+        print(f"Path length: {len(path) if path else 0}")
+        print(f"Nodes visited: {len(visited_nodes)}")
+
         if path:
             delay = 0
             for current, neighbor, det in visited_nodes:
@@ -109,7 +125,7 @@ class MazeApp:
 
 if __name__ == "__main__":
     # First window for A* algorithm
-    root_astar = tk.Tk()
+    '''root_astar = tk.Tk()
     astar_app = MazeApp(root_astar, "A* Algorithm", astar.run_astar)
 
     # Second window for Dijkstra algorithm
@@ -118,9 +134,14 @@ if __name__ == "__main__":
 
     # Third window for Flood fill algorithm
     root_flood = tk.Tk()
-    flood_app = MazeApp(root_flood, "Flood Fill Algorithm", flood.run_flood)
+    flood_app = MazeApp(root_flood, "Flood Fill Algorithm", flood.run_flood)'''
+
+    # Fourth window for Bidirectional search algorithm
+    root_bidi = tk.Tk()
+    bidi_app = MazeApp(root_bidi, "Bidirectional Search Algorithm", bidirection.run_pathfinding)
 
     # Start both Tkinter windows
-    root_astar.mainloop()
-    root_dijkstra.mainloop()
-    root_flood.mainloop()
+    #root_astar.mainloop()
+    #root_dijkstra.mainloop()
+    #root_flood.mainloop()
+    root_bidi.mainloop()
