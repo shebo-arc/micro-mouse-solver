@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
     # Fourth window for Bidirectional search algorithm
     root_bidi = tk.Tk()
-    bidi_app = MazeApp(root_bidi, "Bidirectional Search Algorithm", bidirection.run_pathfinding)
+    bidi_app = MazeApp(root_bidi, "Bidirectional Search Algorithm", bidirection.run_bidirectional_search)
 
     # Start both Tkinter windows
     #root_astar.mainloop()

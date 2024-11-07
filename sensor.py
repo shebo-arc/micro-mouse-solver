@@ -1,5 +1,6 @@
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
+
 def wall(current, direction):
     with open('grid.txt', 'r') as file:
         maze = [list(line.strip()) for line in file.readlines()]  # Read as list of characters
@@ -15,6 +16,3 @@ def wall(current, direction):
     elif 0 <= neighbor[0] < rows and 0 <= neighbor[1] < cols and maze[neighbor[0]][neighbor[1]] == 'E':
         return 'E'
     return None
-
-
-
