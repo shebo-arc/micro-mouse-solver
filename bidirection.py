@@ -38,10 +38,19 @@ def bidirectional_search(start, goal):
 
                     # Check if the search from start and goal meet
                     if neighbor in backward_search:
-                        # Reconstruct the path using the forward search
-                        path = reconstruct_path(came_from_forward, neighbor)
-                        path.extend(reconstruct_path(came_from_backward, neighbor)[::-1])
-                        return path, visited_nodes
+                        # Check if the meeting point is valid
+                        if sensor.wall(neighbor, (0, 0)) != '1':
+                            # Add the meeting point and its four neighbors to the visited nodes list
+                            for dire in DIRECTIONS:
+                                neighbor_neighbor = (neighbor[0] + dire[0], neighbor[1] + dire[1])
+                                det_neighbor = sensor.wall(neighbor, dire)
+                                visited_nodes.append((neighbor, neighbor_neighbor, det_neighbor))
+
+                            # Reconstruct the path using the forward and backward searches
+                            path = reconstruct_path(came_from_forward, came_from_backward, neighbor)
+                            return path, visited_nodes
+                        else:
+                            return None, visited_nodes
 
         # Explore nodes in the backward direction
         current = backward_queue.pop(0)
@@ -61,24 +70,53 @@ def bidirectional_search(start, goal):
 
                     # Check if the search from start and goal meet
                     if neighbor in forward_search:
-                        # Reconstruct the path using the forward search
-                        path = reconstruct_path(came_from_forward, neighbor)
-                        path.extend(reconstruct_path(came_from_backward, neighbor)[::-1])
-                        return path, visited_nodes
+                        # Check if the meeting point is valid
+                        if sensor.wall(neighbor, direction) != '1':
+                            # Add the meeting point and its four neighbors to the visited nodes list
+                            for dire in DIRECTIONS:
+                                neighbor_neighbor = (neighbor[0] + dire[0], neighbor[1] + dire[1])
+                                det_neighbor = sensor.wall(neighbor, dire)
+                                visited_nodes.append((neighbor, neighbor_neighbor, det_neighbor))
+
+                            # Reconstruct the path using the forward and backward searches
+                            path = reconstruct_path(came_from_forward, came_from_backward, neighbor)
+                            return path, visited_nodes
+                        else:
+                            return None, visited_nodes
 
     return None, visited_nodes  # Return None if no path is found, along with the visited nodes
 
 
-def reconstruct_path(came_from, current):
-    """Reconstruct the path from the goal to the start."""
-    path = []
-    while current in came_from:
-        path.append(current)
-        current = came_from[current]
-        if current is None:  # If there's no valid path back to start
-            return None
-    path.reverse()
+def reconstruct_path(came_from_forward, came_from_backward, meeting_point):
+    """Reconstruct the path from the start to the goal."""
+    # Reconstruct the path using the forward search
+    path_forward = []
+    current = meeting_point
+    while current is not None:
+        path_forward.append(current)
+        current = came_from_forward.get(current)
+    path_forward.reverse()
+
+    # Reconstruct the path using the backward search
+    path_backward = []
+    current = meeting_point
+    while current is not None:
+        path_backward.append(current)
+        current = came_from_backward.get(current)
+
+    # Combine the two paths
+    path = path_forward + path_backward[1:]
     path.pop()
+    path.pop(0)
+
+    '''
+    # Print the forward search path, backward search path, and the meeting point
+    print("Forward search path:", path_forward)
+    print("Backward search path:", path_backward)
+    print("Meeting point:", meeting_point)
+    print("Path:", path)
+    '''
+
     return path
 
 
