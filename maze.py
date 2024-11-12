@@ -2,7 +2,7 @@ import tkinter as tk
 import astar
 import dijkstra
 import flood
-import bidirection
+import ida
 import time
 
 # Directions for moving in the maze: Right, Down, Left, Up
@@ -80,14 +80,14 @@ class MazeApp:
         """Draw the maze on the Tkinter canvas."""
         for r in range(self.rows):
             for c in range(self.cols):
-                '''if self.grid[r][c] == '1':
+                '''if grid[r][c] == '1':
                     color = 'black'  # Wall
-                elif self.grid[r][c] == '0':
+                elif grid[r][c] == '0':
                     color = 'white'  # Path
-                elif self.grid[r][c] == 'S':
+                elif grid[r][c] == 'S':
                     color = 'red'  # Start point
-                elif self.grid[r][c] == 'E':
-                    color = 'red'  # End point'''
+                elif grid[r][c] == 'E':
+                    color = 'red'  # End point '''
                 if (r, c) == self.start or (r, c) == self.end:
                     color = 'red'
                 else:
@@ -125,7 +125,7 @@ class MazeApp:
 
 if __name__ == "__main__":
     # First window for A* algorithm
-    '''root_astar = tk.Tk()
+    root_astar = tk.Tk()
     astar_app = MazeApp(root_astar, "A* Algorithm", astar.run_astar)
 
     # Second window for Dijkstra algorithm
@@ -134,14 +134,14 @@ if __name__ == "__main__":
 
     # Third window for Flood fill algorithm
     root_flood = tk.Tk()
-    flood_app = MazeApp(root_flood, "Flood Fill Algorithm", flood.run_flood)'''
+    flood_app = MazeApp(root_flood, "Flood Fill Algorithm", flood.run_flood)
 
     # Fourth window for Bidirectional search algorithm
-    root_bidi = tk.Tk()
-    bidi_app = MazeApp(root_bidi, "Bidirectional Search Algorithm", bidirection.run_bidirectional_search)
+    root_ida = tk.Tk()
+    ida_app = MazeApp(root_ida, "Iterative Deepening A* Algorithm", ida.run_ida_star)
 
     # Start both Tkinter windows
-    #root_astar.mainloop()
-    #root_dijkstra.mainloop()
-    #root_flood.mainloop()
-    root_bidi.mainloop()
+    root_astar.mainloop()
+    root_dijkstra.mainloop()
+    root_flood.mainloop()
+    root_ida.mainloop()
